@@ -1,6 +1,7 @@
 // Sunset Poster Studio, the gta6-cover-art-01 entry (Node 22, standard library only). The app is app/: plain static
-// files a desktop browser loads offline (index.html, style.css, ES modules under app/src/, two OFL fonts under
-// app/fonts/ and two sample photos under app/samples/), no library, no build step and no network request. It turns
+// files a desktop browser loads offline (index.html, style.css, ES modules under app/src/, two OFL fonts, Anton SC
+// and Mr Dafoe, under app/fonts/ and two sample photos under app/samples/), no library, no build step and no network
+// request. It turns
 // the person's own photos and a caption into multi-panel crime-epic poster art with a sunset / neon colour grade:
 // tilted panel layouts, per-panel crop and zoom, gradient-map grades, grain, vignette, glow and slab lettering, saved
 // as a PNG at exactly 1080 x 1080, 1080 x 1350 or 1920 x 1080.

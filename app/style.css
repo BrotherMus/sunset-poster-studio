@@ -1,6 +1,6 @@
 /* Sunset Poster Studio: a dark plum editor with a sunset accent, three columns (photos and caption, the live poster,
    panel / layout / grade / effects). The UI uses system fonts; the poster lettering uses the shipped OFL fonts. */
-@font-face { font-family: 'Anton'; src: url('fonts/Anton-Regular.ttf') format('truetype'); font-display: block; }
+@font-face { font-family: 'Anton'; src: url('fonts/AntonSC-Regular.ttf') format('truetype'); font-display: block; }
 @font-face { font-family: 'Mr Dafoe'; src: url('fonts/MrDafoe-Regular.ttf') format('truetype'); font-display: block; }
 
 :root {
