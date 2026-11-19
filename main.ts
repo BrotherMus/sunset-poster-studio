@@ -1,36 +1,28 @@
-// Sunset Poster Studio's hand-in for make.fun's gta6-cover-art-01 bounty (Node 22, standard library only).
+// A working gta6-cover-art-01 entry (Node 22, standard library only): the app is this directory's app/ folder, plain
+// static files a desktop browser loads offline (app/index.html and its ES modules, no library and no network
+// request), and the program hands it in. It copies app/ and screenshots/ from beside this file to /output and writes
+// /output/dossier.json, the summary the judge reads, with the vendored make.fun library. Only the plumbing, not the
+// cover art the bounty asks for: Cover Snap, a plain one-photo square cover with a sunset tint and a bold caption,
+// exported as a 1080 x 1080 PNG. Its two sample photos (app/samples/) were made for make.fun with an image model and
+// are free to use. Build your own GTA-style cover maker in its place, put your 3 or 4 PNG or JPEG screenshots in
+// screenshots/ (the first by name is the cover) and run it.
 //
-// The app is app/: plain static files a desktop browser loads offline (app/index.html, its ES modules under
-// app/src/, two OFL fonts with their licenses under app/fonts/, and two free sample photos under app/samples/).
-// It turns the person's own photos and a caption into multi-panel sunset / neon poster art and exports a PNG at
-// 1920 x 1080, 1080 x 1350 or 1080 x 1080. Photos are read on the person's machine and never uploaded.
-//
-// This program copies app/ and screenshots/ (3 or 4 JPEGs, the first by name the cover) to /output and writes
-// /output/dossier.json, the summary the judge reads, with the kit's vendored make.fun library, unchanged.
-// It reads nothing but those two folders, so two runs write the same bytes.
-//
-// Serve the app locally with `node serve.ts`, then open http://localhost:8080.
+// Serve it locally with `node serve.ts`, then open http://localhost:8080.
 // Outside the grader's container, MAKEFUN_OUTPUT_DIR stands in for /output:
 //   mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
 
-import { cpSync, existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildDossier } from './vendor/makefun-app.ts';
 
 const here = fileURLToPath(new URL('.', import.meta.url));
 const out = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
-const screenshotsDir = join(here, 'screenshots');
 
 mkdirSync(out, { recursive: true });
 cpSync(join(here, 'app'), join(out, 'app'), { recursive: true });
 mkdirSync(join(out, 'screenshots'), { recursive: true });
-if (existsSync(screenshotsDir)) {
-  // Only the screenshot images themselves: no hidden files or notes ride along.
-  for (const name of readdirSync(screenshotsDir)) {
-    if (/^[A-Za-z0-9][A-Za-z0-9._-]*\.(jpe?g|png)$/i.test(name)) cpSync(join(screenshotsDir, name), join(out, 'screenshots', name));
-  }
-}
+if (existsSync(join(here, 'screenshots'))) cpSync(join(here, 'screenshots'), join(out, 'screenshots'), { recursive: true });
 
 // The scorer's own caps (reference/gate.json): only text_max_bytes shapes the bytes; the others refuse an entry the
 // scorer would refuse (more than 4 screenshots or one over 256 KiB; more than 993 files in app/ or 48 MiB of app

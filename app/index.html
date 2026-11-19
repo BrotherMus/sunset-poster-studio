@@ -3,99 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sunset Poster Studio</title>
+<title>Cover Snap</title>
 <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-<header class="topbar">
-  <div class="brand" aria-label="Sunset Poster Studio">
-    <span class="brand-sun" aria-hidden="true"></span>
-    <span class="brand-script">Sunset</span>
-    <span class="brand-block">Poster Studio</span>
-  </div>
-  <div class="size-switch" id="size-switch" role="radiogroup" aria-label="Poster size"></div>
-  <div class="top-actions">
-    <button id="surprise-button" type="button" class="ghost">Surprise me</button>
-    <button id="export-button" type="button" class="primary">Export PNG</button>
-  </div>
-</header>
-
-<main class="studio">
-  <aside class="side left-side">
-    <section class="card" id="photo-library-section">
-      <h2>Photos</h2>
-      <div class="photo-strip" id="photo-strip" aria-label="Your photos"></div>
-      <div class="row">
-        <label class="button" for="photo-input">Add photos</label>
-        <input id="photo-input" type="file" accept="image/*" multiple hidden>
-        <button id="samples-button" type="button" class="ghost">Samples</button>
-      </div>
-      <button id="fill-panels-button" type="button" class="wide">Fill all panels</button>
-      <p class="hint">Photos stay on this computer. Drop them anywhere.</p>
-    </section>
-
-    <section class="card" id="panel-section">
-      <h2>Panel <span id="panel-number">1</span> <small>of <span id="panel-count">1</span></small>
-        <span class="stepper"><button id="panel-prev" type="button" aria-label="Previous panel">&lsaquo;</button><button id="panel-next" type="button" aria-label="Next panel">&rsaquo;</button></span>
-      </h2>
-      <div class="panel-photo-picker" id="panel-photo-picker" aria-label="Photo in this panel"></div>
-      <label class="slider">Zoom <input id="panel-zoom" type="range" min="1" max="4" step="0.01"></label>
-      <div class="row">
-        <button id="panel-flip" type="button" class="ghost">Mirror</button>
-        <button id="panel-recenter" type="button" class="ghost">Re-centre</button>
-      </div>
-      <p class="hint">Drag on the poster to pan, scroll to zoom.</p>
-    </section>
-  </aside>
-
-  <section class="stage" id="stage">
-    <canvas id="preview-canvas" aria-label="Live poster preview"></canvas>
-    <div class="drop-overlay" id="drop-overlay">Drop photos to add them</div>
-    <p class="status" id="status" role="status"></p>
+<main class="app">
+  <section class="controls">
+    <h1>Cover Snap</h1>
+    <p>A photo and a caption, made into a square cover.</p>
+    <label>Photo <input id="photo" type="file" accept="image/*"></label>
+    <label>Caption <input id="caption" type="text" maxlength="40" value="Sunset Heist"></label>
+    <button id="export" type="button">Export PNG 1080 x 1080</button>
+    <p id="status" role="status"></p>
   </section>
-
-  <aside class="side right-side">
-    <section class="card">
-      <h2>Caption</h2>
-      <input id="caption-title" type="text" maxlength="36" placeholder="Title" aria-label="Title">
-      <input id="caption-sub" type="text" maxlength="40" placeholder="Sub-line" aria-label="Sub-line">
-      <div class="chips" id="caption-style-picker" aria-label="Lettering style"></div>
-      <div class="row">
-        <select id="caption-position" aria-label="Caption position">
-          <option value="auto">Layout spot</option>
-          <option value="top">Top</option>
-          <option value="middle">Middle</option>
-          <option value="bottom">Bottom</option>
-        </select>
-        <label class="slider compact">Size <input id="caption-scale" type="range" min="0.6" max="1.3" step="0.01"></label>
-      </div>
-    </section>
-
-    <section class="card">
-      <h2>Layout</h2>
-      <div class="layout-picker" id="layout-picker"></div>
-    </section>
-
-    <section class="card">
-      <h2>Colour grade</h2>
-      <div class="grade-picker" id="grade-picker"></div>
-      <label class="check"><input id="look-alternate" type="checkbox"> Alternate panel tints</label>
-    </section>
-
-    <section class="card">
-      <h2>Effects</h2>
-      <div class="effects" id="effect-sliders"></div>
-      <label class="slider">Border colour
-        <select id="look-border-color">
-          <option value="grade">Grade</option>
-          <option value="ink">Ink</option>
-          <option value="cream">Cream</option>
-          <option value="hot">Hot</option>
-        </select>
-      </label>
-    </section>
-  </aside>
+  <canvas id="cover" width="1080" height="1080" aria-label="The cover"></canvas>
 </main>
-<script type="module" src="./src/studio.js"></script>
+<script type="module" src="./src/main.js"></script>
 </body>
 </html>

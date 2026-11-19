@@ -1,6 +1,5 @@
 [
-  { "name": "1-cover-landscape.jpg", "query": "?shot=cover&size=landscape&layout=title-mosaic&grade=sunset-boulevard&style=sunset-stripes&title=Sunset%20Heist&sub=one%20last%20summer&look.keyline=0.7", "w": 1920, "h": 1080 },
-  { "name": "2-editor.jpg", "query": "?shot=editor&size=landscape&layout=hero-four&grade=neon-nights&style=slab&title=Boulevard%20Queen&sub=top%20down%2C%20no%20rules&select=1", "w": 1280, "h": 720 },
-  { "name": "3-cover-portrait.jpg", "query": "?shot=cover&size=portrait&layout=shattered-six&grade=neon-nights&style=slab&title=Pier%20Pressure&sub=the%20big%20catch&look.keyline=0.9", "w": 1080, "h": 1350 },
-  { "name": "4-cover-square.jpg", "query": "?shot=cover&size=square&layout=twin-slash&grade=golden-hour&style=sunset-stripes&title=Golden%20Coast&sub=no%20way%20back", "w": 1080, "h": 1080 }
+  { "name": "1-cover.jpg", "query": "?shot=cover&photo=pier&caption=Sunset%20Heist", "w": 1080, "h": 1080 },
+  { "name": "2-editor.jpg", "query": "?shot=editor&photo=boulevard&caption=Boulevard%20Queen", "w": 1280, "h": 720 },
+  { "name": "3-cover.jpg", "query": "?shot=cover&photo=boulevard&caption=Boulevard%20Queen", "w": 1080, "h": 1080 }
 ]
