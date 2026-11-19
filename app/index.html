@@ -3,21 +3,93 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cover Snap</title>
+<title>Sunset Poster Studio</title>
 <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-<main class="app">
-  <section class="controls">
-    <h1>Cover Snap</h1>
-    <p>A photo and a caption, made into a square cover.</p>
-    <label>Photo <input id="photo" type="file" accept="image/*"></label>
-    <label>Caption <input id="caption" type="text" maxlength="40" value="Sunset Heist"></label>
-    <button id="export" type="button">Export PNG 1080 x 1080</button>
-    <p id="status" role="status"></p>
+<header class="topbar">
+  <div class="brand"><span class="brand-sun" aria-hidden="true"></span><span>Sunset Poster Studio</span></div>
+  <div class="size-switch" id="size-switch" role="radiogroup" aria-label="Poster size">
+    <button type="button" data-size="1080x1080" role="radio">Square <small>1080 × 1080</small></button>
+    <button type="button" data-size="1080x1350" role="radio">Portrait <small>1080 × 1350</small></button>
+    <button type="button" data-size="1920x1080" role="radio">Wide <small>1920 × 1080</small></button>
+  </div>
+  <div class="actions">
+    <button type="button" id="surprise-button" class="ghost">✦ Surprise me</button>
+    <button type="button" id="export-button" class="primary">Export PNG</button>
+  </div>
+</header>
+
+<main class="studio">
+  <aside class="sidebar sidebar-left">
+    <section class="card">
+      <h2>Photos</h2>
+      <label class="drop-zone" id="drop-zone">
+        <input id="photo-input" type="file" accept="image/*" multiple>
+        <strong>Add photos</strong>
+        <span>or drop them anywhere · stays on your device</span>
+      </label>
+      <div class="photo-strip" id="photo-strip" aria-label="Your photos"></div>
+    </section>
+    <section class="card">
+      <h2>Caption</h2>
+      <label class="field">Title <input id="title-input" type="text" maxlength="48" value="Sunset Heist" spellcheck="false"></label>
+      <label class="field">Sub-line <input id="subline-input" type="text" maxlength="48" value="one last job" spellcheck="false"></label>
+      <div class="field-row">
+        <label class="field">Position
+          <select id="caption-position">
+            <option value="auto">Layout's spot</option>
+            <option value="top">Top</option>
+            <option value="middle">Middle</option>
+            <option value="bottom">Bottom</option>
+          </select>
+        </label>
+        <label class="check"><input id="slab-toggle" type="checkbox" checked> Slab</label>
+      </div>
+      <label class="slider">Title size <input id="title-size" type="range" min="0.6" max="1.4" step="0.01" value="1"></label>
+    </section>
+  </aside>
+
+  <section class="stage" id="stage">
+    <div class="canvas-frame" id="canvas-frame">
+      <canvas id="poster-canvas" aria-label="Live poster preview"></canvas>
+    </div>
+    <p class="hint">Click a panel · drag to pan · scroll to zoom · double-click resets · drop a photo on a panel</p>
   </section>
-  <canvas id="cover" width="1080" height="1080" aria-label="The cover"></canvas>
+
+  <aside class="sidebar sidebar-right">
+    <section class="card" id="panel-controls">
+      <h2>Panel <span id="panel-number">1</span> <small id="panel-count"></small></h2>
+      <div class="panel-photo-picker" id="panel-photo-picker" aria-label="Photo in this panel"></div>
+      <label class="slider">Zoom <input id="panel-zoom" type="range" min="1" max="5" step="0.01" value="1"></label>
+      <div class="button-row">
+        <button type="button" id="fill-all-button">Use in all panels</button>
+        <button type="button" id="reset-crop-button">Reset crop</button>
+        <button type="button" id="shuffle-crops-button">Shuffle crops</button>
+      </div>
+    </section>
+    <section class="card">
+      <h2>Layout</h2>
+      <div class="layout-picker" id="layout-picker"></div>
+    </section>
+    <section class="card">
+      <h2>Colour grade</h2>
+      <div class="grade-picker" id="grade-picker"></div>
+    </section>
+    <section class="card">
+      <h2>Effects</h2>
+      <label class="slider">Grade <input data-effect="strength" type="range" min="0" max="1" step="0.01"></label>
+      <label class="slider">Glow <input data-effect="glow" type="range" min="0" max="1" step="0.01"></label>
+      <label class="slider">Light leak <input data-effect="leak" type="range" min="0" max="1" step="0.01"></label>
+      <label class="slider">Vignette <input data-effect="vignette" type="range" min="0" max="1" step="0.01"></label>
+      <label class="slider">Grain <input data-effect="grain" type="range" min="0" max="1" step="0.01"></label>
+      <label class="slider">Borders <input data-effect="border" type="range" min="0.4" max="2.2" step="0.01"></label>
+      <label class="check"><input data-effect="varyTint" type="checkbox"> Tint each panel differently</label>
+    </section>
+  </aside>
 </main>
+<p id="status" class="status" role="status"></p>
+<img id="shot-image" alt="Exported poster" hidden>
 <script type="module" src="./src/main.js"></script>
 </body>
 </html>
