@@ -62,6 +62,17 @@ export const LAYOUTS = [
       tall: { tree: { cut: 'h', at: [0.5], tilt: [-12], kids: [P, P] }, floats: [{ cx: 0.84, cy: 0.35, w: 0.32, h: 0.3, rot: 6 }, { cx: 0.16, cy: 0.66, w: 0.32, h: 0.3, rot: -6 }], caption: { x: 0.5, y: 0.86, w: 0.86 } },
     },
   },
+  {
+    // Two leads side by side on top, split by a steep slash, and a row of three supporting panels underneath; the
+    // title sits across the seam between them.
+    id: 'face-off',
+    name: 'Face Off',
+    variants: {
+      wide: { tree: { cut: 'h', at: [0.62], tilt: [-4], kids: [{ cut: 'v', at: [0.5], tilt: [14], kids: [P, P] }, { cut: 'v', at: [0.34, 0.67], tilt: [-10, -10], kids: [P, P, P] }] }, caption: { x: 0.5, y: 0.66, w: 0.6 } },
+      square: { tree: { cut: 'h', at: [0.6], tilt: [-5], kids: [{ cut: 'v', at: [0.5], tilt: [12], kids: [P, P] }, { cut: 'v', at: [0.34, 0.67], tilt: [-9, -9], kids: [P, P, P] }] }, caption: { x: 0.5, y: 0.64, w: 0.9 } },
+      tall: { tree: { cut: 'h', at: [0.58], tilt: [-6], kids: [{ cut: 'v', at: [0.5], tilt: [9], kids: [P, P] }, { cut: 'v', at: [0.34, 0.67], tilt: [-10, -10], kids: [P, P, P] }] }, caption: { x: 0.5, y: 0.62, w: 0.86 } },
+    },
+  },
 ];
 
 /** Which shape of a layout suits a poster of this width and height. */
