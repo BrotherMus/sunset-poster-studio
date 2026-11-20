@@ -80,10 +80,15 @@ input[type=range] { accent-color: var(--hot); width: 100%; margin: 0; }
 .segmented button { flex: 1; border: 0; background: none; padding: 5px 0; cursor: pointer; color: var(--muted); font-weight: 600; font-size: 12px; }
 .segmented button.active { background: var(--hot); color: #fff; }
 
-.stage { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 14px; min-width: 0; min-height: 0;
-  background: radial-gradient(circle at 50% 40%, #2a1240, #110818 70%); }
+/* The stage: a dusk glow behind the poster and a faint neon horizon grid along the floor. */
+.stage { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 12px; min-width: 0; min-height: 0; overflow: hidden;
+  background: radial-gradient(ellipse 70% 55% at 50% 45%, #5a1650 0%, #2a1240 45%, #110818 80%); }
+.stage::before { content: ''; position: absolute; inset: 62% -40% -10%; pointer-events: none; opacity: 0.35;
+  background: repeating-linear-gradient(90deg, #ff3d7f 0 1px, transparent 1px 46px), repeating-linear-gradient(0deg, #ff3d7f 0 1px, transparent 1px 28px);
+  transform: perspective(300px) rotateX(58deg); transform-origin: top; -webkit-mask: linear-gradient(#000, transparent 85%); mask: linear-gradient(#000, transparent 85%); }
+.stage > * { position: relative; }
 .canvas-wrap { position: relative; border: 2px solid transparent; border-radius: 4px; flex: 1; width: 100%; min-height: 0; display: flex; align-items: center; justify-content: center; }
-#poster { max-width: 100%; max-height: 100%; box-shadow: 0 18px 50px #000c, 0 0 0 1px #ffffff14; cursor: grab; touch-action: none; }
+#poster { max-width: 100%; max-height: 100%; box-shadow: 0 18px 50px #000c, 0 0 0 1px #ffffff1f, 0 0 90px -10px #ff3d7f88; cursor: grab; touch-action: none; }
 #poster.dragging { cursor: grabbing; }
 .drop-hint { position: absolute; inset: auto 0 12px; text-align: center; pointer-events: none; opacity: 0; transition: opacity 0.15s; font-weight: 700; color: var(--cyan); text-shadow: 0 1px 4px #000; }
 .canvas-wrap.over .drop-hint { opacity: 1; }

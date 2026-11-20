@@ -11,6 +11,7 @@ function posterPoint(canvas, state, event) {
 
 /** Finds the top-most panel under a poster point (floating cards first, as they sit on top). */
 export function findPanelAt(layout, point) {
+  if (!layout) return null; // nothing drawn yet
   for (let i = layout.panels.length - 1; i >= 0; i--) {
     const panel = layout.panels[i];
     if (panel.poly.length > 2 && pointInPolygon(point, panel.poly)) return panel;
