@@ -1,5 +1,6 @@
-// Sunset Poster Studio: wires the editor. Photos in (picker, drop, samples) -> panels -> caption, layout, grade and
-// effects -> live preview -> Export PNG at the exact size. A `?shot=` query sets up a fixed scene for screenshots.
+// Sunset Poster Studio: wires the editor. Photos in (picker, drop, samples) -> panels (source, crop, role tag, stamp)
+// -> caption, poster extras, layout, grade and effects -> live preview -> Export PNG at the exact size. A `?shot=`
+// query sets up a fixed scene for screenshots.
 import { LAYOUTS, buildLayout, countLayoutPanels } from './layouts.js';
 import { GRADES, findGrade, gradeSwatchCss } from './grades.js';
 import { SCENES } from './scenes.js';
@@ -194,6 +195,8 @@ function syncPanelInspector() {
   SCENES.forEach((scene) => select.add(new Option(`Scene · ${scene.name}`, `scene:${scene.id}`)));
   select.value = panel.source;
   $('panel-zoom').value = panel.crop.zoom;
+  $('panel-role').value = state.roles[state.selected] ?? '';
+  $('panel-stamp').value = state.stamps[state.selected] ?? '';
   const isPhoto = panel.source.startsWith('photo:');
   $('panel-zoom').disabled = !isPhoto;
   $('panel-flip').disabled = !isPhoto;
@@ -217,6 +220,8 @@ function syncControls() {
   $('caption-scale').value = state.caption.scale;
   $('caption-slab').checked = state.caption.slab;
   for (const key of Object.keys(state.fx)) $(`fx-${key}`).value = state.fx[key];
+  for (const input of document.querySelectorAll('[data-extra]')) input.checked = Boolean(state.extras[input.dataset.extra]);
+  for (const input of document.querySelectorAll('[data-extra-text]')) input.value = state.extras[input.dataset.extraText];
   renderPhotoTray();
   syncPanelInspector();
 }
@@ -280,6 +285,28 @@ function wireControls() {
       update({ controls: false });
     });
   }
+
+  // Poster extras: each switch and each text goes straight into state.extras.
+  for (const input of document.querySelectorAll('[data-extra]')) {
+    input.addEventListener('change', () => {
+      state.extras[input.dataset.extra] = input.checked;
+      update({ controls: false });
+    });
+  }
+  for (const input of document.querySelectorAll('[data-extra-text]')) {
+    input.addEventListener(input.tagName === 'SELECT' ? 'change' : 'input', () => {
+      state.extras[input.dataset.extraText] = input.value;
+      update({ controls: false });
+    });
+  }
+  $('panel-role').addEventListener('input', (event) => {
+    state.roles[state.selected] = event.target.value;
+    update({ controls: false });
+  });
+  $('panel-stamp').addEventListener('input', (event) => {
+    state.stamps[state.selected] = event.target.value;
+    update({ controls: false });
+  });
 
   $('panel-source').addEventListener('change', (event) => {
     state.panels[state.selected] = { source: event.target.value, crop: defaultCrop() };

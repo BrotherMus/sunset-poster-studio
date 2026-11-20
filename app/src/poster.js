@@ -1,12 +1,16 @@
-// Renders a whole poster from the editor state: ink backdrop, graded photo panels cut by the layout, floating cards,
-// bloom, caption lettering, vignette and film grain. The same function draws the live preview (at a reduced pixel
-// scale) and the exported PNG (at scale 1, the exact poster size).
+// Renders a whole poster from the editor state: ink backdrop, graded photo panels cut by the layout with thin bright
+// frame lines, floating cards, bloom, vignette, the poster extras (role tags, stamps, press strip, credits, tagline,
+// seal), the caption lettering and film grain. The same function draws the live preview (at a reduced pixel scale)
+// and the exported PNG (at scale 1, the exact poster size).
 import { buildLayout } from './layouts.js';
 import { applyGradeToPixels, findGrade, withAlpha } from './grades.js';
-import { drawScene } from './scenes.js';
-import { drawCaption } from './lettering.js';
-import { tracePolygon } from './geometry.js';
+import { SCENES, drawScene } from './scenes.js';
+import { drawCaption, planCaption } from './lettering.js';
+import { deviceScale, insetConvexPolygon, tracePolygon } from './geometry.js';
 import { createRandom } from './random.js';
+import {
+  drawCreditsStrip, drawPanelLabels, drawPressStrip, drawSeal, drawTaglineBar, extrasInsets, measureTagline, sealPlacement,
+} from './poster-extras.js';
 
 const panelCache = new Map();
 
@@ -17,7 +21,7 @@ export function gutterFor(state) {
 
 /** The current layout laid out on the poster, panels and caption spot included. */
 export function layoutForState(state) {
-  return buildLayout(state.layoutId, state.size.w, state.size.h, gutterFor(state));
+  return buildLayout(state.layoutId, state.size.w, state.size.h, gutterFor(state), extrasInsets(state));
 }
 
 /** Where the photo sits in a panel's frame: its scale and top-left corner, with the focus point clamped so the photo
@@ -38,8 +42,7 @@ export function resolvePanelSource(state, index) {
   const panel = state.panels[index];
   const [kind, value] = (panel?.source ?? '').split(':');
   if (kind === 'photo' && state.photos[Number(value)]) return { kind: 'photo', photo: state.photos[Number(value)], key: `p${state.photos[Number(value)].id}` };
-  const scenes = ['sunset-beach', 'palm-highway', 'neon-skyline'];
-  const scene = kind === 'scene' ? value : scenes[index % scenes.length];
+  const scene = kind === 'scene' ? value : SCENES[index % SCENES.length].id;
   return { kind: 'scene', scene, key: `s${scene}` };
 }
 
@@ -107,6 +110,21 @@ function drawPanelLight(ctx, panel, palette, glow, gutter, strength) {
   ctx.shadowBlur = 0;
 }
 
+/** A thin bright line in the grade's frame colour (gold or neon) just inside the panel's edge, softly glowing. */
+function drawFrameLine(ctx, panel, palette, gutter, unit) {
+  const inner = insetConvexPolygon(panel.poly, Math.max(3, gutter * 0.35 + unit * 0.007));
+  if (inner.length < 3) return;
+  ctx.save();
+  tracePolygon(ctx, inner);
+  ctx.lineJoin = 'miter';
+  ctx.shadowColor = palette.frame;
+  ctx.shadowBlur = unit * 0.008 * deviceScale(ctx);
+  ctx.lineWidth = Math.max(1.5, unit * 0.0028);
+  ctx.strokeStyle = palette.frame;
+  ctx.stroke();
+  ctx.restore();
+}
+
 /** Draws one panel into the poster: content clipped to its polygon, then its light, then card borders if floating. */
 function drawPanel(ctx, state, panel, grade, pixelScale, gutter) {
   if (panel.poly.length < 3) return;
@@ -132,6 +150,7 @@ function drawPanel(ctx, state, panel, grade, pixelScale, gutter) {
   ctx.drawImage(content, -panel.frame.w / 2, -panel.frame.h / 2, panel.frame.w, panel.frame.h);
   ctx.restore();
   drawPanelLight(ctx, panel, palette, state.fx.glow, gutter, resolvePanelSource(state, panel.index).kind === 'photo' ? state.fx.strength : 0.25);
+  if (state.extras?.frames) drawFrameLine(ctx, panel, palette, gutter, Math.min(state.size.w, state.size.h));
   ctx.restore();
   if (panel.floating) {
     ctx.save();
@@ -230,7 +249,20 @@ export function renderPoster(canvas, state, { pixelScale = 1, highlight = -1 } =
   for (const panel of layout.panels) drawPanel(ctx, state, panel, grade, pixelScale, gutter);
   drawBloom(ctx, canvas, state.fx.glow, palette);
   drawVignette(ctx, width, height, palette, state.fx.vignette);
-  drawCaption(ctx, state.caption, layout.caption, width, height, palette, state.fx);
+  const plan = planCaption(ctx, state.caption, layout.caption, width, height, {
+    area: layout.area,
+    under: {
+      measure: (blockW, unit) => measureTagline(ctx, state, blockW, unit),
+      draw: (bar, x, top) => drawTaglineBar(ctx, bar, x, top, palette),
+    },
+  });
+  const seal = state.extras?.seal ? sealPlacement(state, plan, layout.area) : null;
+  drawPanelLabels(ctx, state, layout, palette, gutter, plan.box, seal);
+  const insets = extrasInsets(state);
+  drawPressStrip(ctx, state, width, palette, insets.top);
+  drawCreditsStrip(ctx, state, width, height, palette, insets.bottom);
+  drawCaption(ctx, plan, palette, state.fx);
+  if (seal) drawSeal(ctx, state, palette, seal);
   drawGrain(ctx, canvas, state.fx.grain);
 
   const selected = layout.panels[highlight];

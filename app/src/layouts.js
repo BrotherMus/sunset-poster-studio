@@ -104,12 +104,17 @@ function cutPolygon(poly, node) {
 }
 
 /**
- * Lays a layout out on a width x height poster with `gutter` pixels of border between panels. Returns the panels in
- * order (grid panels first, then floating cards) with their inset polygon and box, and where the caption goes.
+ * Lays a layout out on a width x height poster with `gutter` pixels of border between panels. `insets` keeps bands
+ * free along the top and bottom (for the press strip and the credits): the grid, its floating cards and the caption
+ * spot all fit into the area between. Returns the panels in order (grid panels first, then floating cards) with their
+ * inset polygon and box, where the caption goes, and the panel area.
  */
-export function buildLayout(layoutId, width, height, gutter) {
+export function buildLayout(layoutId, width, height, gutter, insets = { top: 0, bottom: 0 }) {
   const layout = findLayout(layoutId);
   const variant = layout.variants[posterShape(width, height)];
+  const top = insets.top ?? 0;
+  const areaH = height - top - (insets.bottom ?? 0);
+  const squeeze = areaH / height;
   const panels = [];
   const walk = (poly, node) => {
     if (node === P) {
@@ -121,13 +126,14 @@ export function buildLayout(layoutId, width, height, gutter) {
     }
     cutPolygon(poly, node).forEach((piece, i) => walk(piece, node.kids[i]));
   };
-  walk(rectPolygon(gutter / 2, gutter / 2, width - gutter, height - gutter), variant.tree);
+  walk(rectPolygon(gutter / 2, top + gutter / 2, width - gutter, areaH - gutter), variant.tree);
   const unit = Math.min(width, height);
   for (const f of variant.floats ?? []) {
     // A floating card's photo turns with the card, so its frame is the card itself rather than its bounding box.
-    const frame = { cx: f.cx * width, cy: f.cy * height, w: f.w * unit * (width > height ? 1.15 : 1), h: f.h * unit, rot: f.rot };
+    const frame = { cx: f.cx * width, cy: top + f.cy * areaH, w: f.w * unit * (width > height ? 1.15 : 1) * squeeze, h: f.h * unit * squeeze, rot: f.rot };
     const poly = rotatedRectPolygon(frame.cx, frame.cy, frame.w, frame.h, frame.rot);
     panels.push({ index: panels.length, poly, bounds: polygonBounds(poly), frame, floating: true });
   }
-  return { layout, shape: posterShape(width, height), panels, caption: variant.caption };
+  const caption = { ...variant.caption, y: (top + variant.caption.y * areaH) / height };
+  return { layout, shape: posterShape(width, height), panels, caption, area: { top, bottom: top + areaH } };
 }

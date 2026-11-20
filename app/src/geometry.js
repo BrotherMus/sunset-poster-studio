@@ -104,6 +104,13 @@ export function rotatedRectPolygon(cx, cy, w, h, degrees) {
   }));
 }
 
+/** How many device pixels one unit of the context's current transform covers. Canvas shadow blurs ignore the
+ * transform, so blurs given in poster pixels are multiplied by this to look the same in the preview and the PNG. */
+export function deviceScale(ctx) {
+  const t = ctx.getTransform();
+  return Math.hypot(t.a, t.b) || 1;
+}
+
 /** Traces a polygon as the current canvas path. */
 export function tracePolygon(ctx, poly) {
   ctx.beginPath();

@@ -3,8 +3,9 @@
 // and Mr Dafoe, under app/fonts/ and two sample photos under app/samples/), no library, no build step and no network
 // request. It turns
 // the person's own photos and a caption into multi-panel crime-epic poster art with a sunset / neon colour grade:
-// tilted panel layouts, per-panel crop and zoom, gradient-map grades, grain, vignette, glow and slab lettering, saved
-// as a PNG at exactly 1080 x 1080, 1080 x 1350 or 1920 x 1080.
+// tilted panel layouts, per-panel crop and zoom, painted scenes, gradient-map grades, grain, vignette, glow, striped
+// title lettering and poster extras (role tags, stamps, press quote, seal, tagline, credits with a barcode), saved as a
+// PNG at exactly 1080 x 1080, 1080 x 1350 or 1920 x 1080.
 //
 // This program hands it in: it copies app/ and screenshots/ (taken by capture-shots.mjs from shots.json) from beside
 // this file to /output and writes /output/dossier.json, the summary the judge reads, with the vendored make.fun

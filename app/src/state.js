@@ -13,6 +13,34 @@ export const POSTER_SIZES = [
 
 export const DEFAULT_FX = { strength: 0.85, grain: 0.5, vignette: 0.55, glow: 0.7, border: 16 };
 
+/** The role tag each panel starts with, in panel order. */
+export const DEFAULT_ROLES = ['THE BOSS', 'THE DRIVER', 'THE RIVAL', 'THE GETAWAY', 'THE CREW', 'THE DROP', 'THE HIDEOUT', 'THE FIXER'];
+
+/** The location / time stamps panels start with ('' shows none). */
+export const DEFAULT_STAMPS = ['CORAL CAUSEWAY · 7:15 PM', '', '', 'PELICAN PIER · 11:40 PM', '', '', '', ''];
+
+/** The poster extras drawn by poster-extras.js, each switchable, with their editable text. */
+export function defaultExtras() {
+  return {
+    frames: true,
+    roles: true,
+    stamps: true,
+    quote: true,
+    quoteText: 'PURE SUNSET MAYHEM',
+    quoteSource: 'THE PALM GAZETTE',
+    vol: 'VOL. 1',
+    seal: true,
+    sealText: "HOT SUMMER '27",
+    sealEdge: 'jagged',
+    sealSpot: 'title',
+    tagline: true,
+    taglineText: 'ONE COAST · TWO STORIES · NO WAY BACK',
+    credits: true,
+    creditsText: 'SUNSET PICTURES PRESENTS A PALM COAST PRODUCTION · THE BOSS · THE DRIVER · THE RIVAL · MUSIC BY NEON TIDE · '
+      + 'COSTUMES BY GOLDEN HOUR · EDITED BY SLOW FADE · PHOTOGRAPHY BY LAST LIGHT · PRODUCED BY HIGH TIDE FILMS · WRITTEN AND DIRECTED BY THE NIGHT SHIFT',
+  };
+}
+
 /** A centred, unzoomed crop; `fy` sits a little high because faces usually do. */
 export function defaultCrop() {
   return { fx: 0.5, fy: 0.42, zoom: 1, flip: false };
@@ -25,7 +53,10 @@ export function createPosterState() {
     gradeId: 'sunset-strip',
     photos: [],
     panels: Array.from({ length: MAX_PANELS }, (_, i) => ({ source: `scene:${SCENES[i % SCENES.length].id}`, crop: defaultCrop() })),
-    caption: { title: 'Vice Beach', sub: 'one last summer', tag: 'Coming soon', position: 'auto', slab: true, scale: 1 },
+    caption: { title: 'Vice Beach', sub: 'one last summer', tag: 'Coming soon', position: 'auto', slab: false, scale: 1 },
+    roles: [...DEFAULT_ROLES],
+    stamps: [...DEFAULT_STAMPS],
+    extras: defaultExtras(),
     fx: { ...DEFAULT_FX },
     selected: 0,
   };
@@ -133,7 +164,7 @@ export function surprisePoster(state, seed = Date.now(), newCaption = false) {
   state.caption.position = rng.pick(['auto', 'auto', 'center', 'bottom']);
   const n = state.photos.length;
   for (let i = 0; i < MAX_PANELS; i++) {
-    const useScene = !n || rng() < 0.18;
+    const useScene = !n || rng() < 0.25;
     const photoIndex = (i + rng.int(0, n - 1)) % Math.max(1, n);
     const source = useScene ? `scene:${rng.pick(SCENES).id}` : `photo:${photoIndex}`;
     const crop = shotCropFor(state.photos[photoIndex], rng.int(0, 7), rng() < 0.3);
@@ -141,8 +172,40 @@ export function surprisePoster(state, seed = Date.now(), newCaption = false) {
     crop.zoom *= rng.range(0.9, 1.15);
     state.panels[i] = { source, crop };
   }
+  surpriseExtras(state, rng);
   if (newCaption) {
     state.caption.title = rng.pick(SURPRISE_TITLES);
     state.caption.sub = rng.pick(SURPRISE_SUBS);
   }
+}
+
+const ROLE_POOL = ['THE BOSS', 'THE DRIVER', 'THE RIVAL', 'THE GETAWAY', 'THE CREW', 'THE INFORMANT', 'THE HUSTLER', 'THE LOOKOUT',
+  'THE DEAL', 'THE HIDEOUT', 'THE DROP', 'THE PARTNER', 'THE FIXER', 'THE SCORE', 'THE WHEELMAN', 'THE COAST'];
+const STAMP_POOL = ['CORAL CAUSEWAY · 7:15 PM', 'PELICAN PIER · 11:40 PM', 'OCEAN BLVD · 2:03 AM', 'KEY HARBOR · 6:48 AM',
+  'NEON MILE · 12:00 AM', 'PALM COURT MOTEL · 3:30 AM', 'SUNSET STRIP · 8:22 PM', 'MARINA 9 · 1:15 AM'];
+const QUOTE_POOL = [['PURE SUNSET MAYHEM', 'THE PALM GAZETTE'], ['A NEON-SOAKED THRILL RIDE', 'COASTLINE WEEKLY'],
+  ['HOTTER THAN THE GULF IN AUGUST', 'THE KEYS COURIER'], ["THE SUMMER'S BIGGEST SCORE", 'BAYSIDE DAILY'],
+  ['STYLISH, LOUD AND LETHAL', 'NIGHT SHIFT RADIO']];
+const SEAL_POOL = ["HOT SUMMER '27", 'ONLY IN THEATERS', 'WORLD PREMIERE', 'NOW SHOWING', "DIRECTOR'S CUT", 'LIMITED EDITION'];
+const TAGLINE_POOL = ['ONE COAST · TWO STORIES · NO WAY BACK', 'EVERY SUNSET HAS A PRICE', 'TWO PARTNERS · ONE LAST SCORE',
+  'THE COAST NEVER SLEEPS', 'BIG MONEY · BAD IDEAS · GREAT TAN'];
+const VOL_POOL = ['VOL. 1', 'VOL. 2', 'PART I', 'EPISODE 1'];
+
+/** Surprise me for the poster extras: fresh role tags (no two panels alike), one or two stamps, a press quote, a
+ * seal, a tagline and a badge, with each extra mostly on. */
+export function surpriseExtras(state, rng) {
+  const roles = [...ROLE_POOL];
+  for (let i = 0; i < MAX_PANELS; i++) state.roles[i] = roles.splice(rng.int(0, roles.length - 1), 1)[0];
+  const stamps = [...STAMP_POOL];
+  state.stamps = state.stamps.map(() => '');
+  for (let k = rng.int(1, 2); k > 0; k--) state.stamps[rng.int(0, MAX_PANELS - 1)] = stamps.splice(rng.int(0, stamps.length - 1), 1)[0];
+  const ex = state.extras;
+  [ex.quoteText, ex.quoteSource] = rng.pick(QUOTE_POOL);
+  ex.sealText = rng.pick(SEAL_POOL);
+  ex.sealEdge = rng.pick(['jagged', 'scalloped']);
+  ex.sealSpot = rng.pick(['title', 'title', 'corner']);
+  ex.taglineText = rng.pick(TAGLINE_POOL);
+  ex.vol = rng.pick(VOL_POOL);
+  for (const key of ['roles', 'stamps', 'quote', 'seal', 'tagline', 'credits']) ex[key] = rng() < 0.85;
+  ex.frames = rng() < 0.9;
 }
