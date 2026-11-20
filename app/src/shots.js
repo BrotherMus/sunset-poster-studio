@@ -5,7 +5,7 @@
 //   title= sub= tag= pos=auto|top|center|bottom  scale=<lettering size>  seed=<n> (runs Surprise me)  select=<panel>
 //   strength= grain= vignette= glow= border=  slab=1 (the coloured slab behind the title)
 //   roles=THE BOSS,THE DRIVER,...  stamps=,CORAL CAUSEWAY · 7:15 PM,...  (per panel, in order; empty keeps none)
-//   quote= source= vol= seal= edge=jagged|scalloped sealspot=title|corner tagline= credits=  off=quote,seal,...
+//   quote= source= vol= seal= edge=jagged|scalloped sealspot=title|corner tagline= credits=  off=quote,seal,...  on=rays,...
 import { POSTER_SIZES, defaultCrop } from './state.js';
 
 const EXTRA_TEXT = { quote: 'quoteText', source: 'quoteSource', vol: 'vol', seal: 'sealText', edge: 'sealEdge', sealspot: 'sealSpot', tagline: 'taglineText', credits: 'creditsText' };
@@ -47,6 +47,7 @@ export async function runShot(query, api) {
   if (query.has('stamps')) state.stamps = state.stamps.map((_, i) => query.get('stamps').split(',')[i] ?? '');
   for (const [key, field] of Object.entries(EXTRA_TEXT)) if (query.has(key)) state.extras[field] = query.get(key);
   for (const key of (query.get('off') ?? '').split(',')) if (key in state.extras) state.extras[key] = false;
+  for (const key of (query.get('on') ?? '').split(',')) if (key in state.extras) state.extras[key] = true;
   if (query.has('select')) state.selected = Number(query.get('select'));
   api.rebuild();
 }

@@ -186,10 +186,81 @@ function drawTitleLines(ctx, lines, baselines, capH, size, palette, fx) {
   ctx.strokeStyle = palette.ink;
   ctx.lineWidth = outline;
   lines.forEach((line, i) => ctx.strokeText(line, 0, baselines[i]));
-  ctx.strokeStyle = palette.frame ?? palette.sub;
+  ctx.strokeStyle = palette.rim ?? palette.frame ?? palette.sub;
   ctx.lineWidth = size * 0.034;
   lines.forEach((line, i) => ctx.strokeText(line, 0, baselines[i]));
   fillTitleLines(ctx, lines, baselines, capH, size, palette);
+  if (fx.glow > 0) drawTitleFlare(ctx, lines, baselines, capH, palette, fx.glow);
+}
+
+/** A four-point chrome glint: two thin crossed spikes and a soft halo, added as light. */
+function drawGlint(ctx, x, y, r, color) {
+  const k = deviceScale(ctx);
+  const halo = ctx.createRadialGradient(x, y, 0, x, y, r * 0.55);
+  halo.addColorStop(0, 'rgba(255,255,255,0.95)');
+  halo.addColorStop(0.25, withAlpha(color, 0.6));
+  halo.addColorStop(1, withAlpha(color, 0));
+  ctx.fillStyle = halo;
+  ctx.fillRect(x - r, y - r, r * 2, r * 2);
+  ctx.save();
+  ctx.shadowColor = color;
+  ctx.shadowBlur = r * 0.25 * k;
+  ctx.fillStyle = '#ffffff';
+  for (const [w, h] of [[r, r * 0.05], [r * 0.05, r * 0.7]]) {
+    ctx.beginPath();
+    ctx.moveTo(x - w, y);
+    ctx.lineTo(x, y - h);
+    ctx.lineTo(x + w, y);
+    ctx.lineTo(x, y + h);
+    ctx.closePath();
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+/** Light catching the chrome: an anamorphic flare streaking along the shine's edge of the first line, and glints on
+ * the title's top corners. */
+function drawTitleFlare(ctx, lines, baselines, capH, palette, glow) {
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  const widths = lines.map((l) => ctx.measureText(l).width);
+  const y = baselines[0] - capH * 0.64;
+  const half = widths[0] * 0.75;
+  const streak = ctx.createLinearGradient(-half, 0, half, 0);
+  streak.addColorStop(0, withAlpha(palette.glow, 0));
+  streak.addColorStop(0.5, `rgba(255,255,255,${0.75 * glow})`);
+  streak.addColorStop(1, withAlpha(palette.glow, 0));
+  ctx.fillStyle = streak;
+  ctx.fillRect(-half, y - capH * 0.008, half * 2, capH * 0.016);
+  const bloomStreak = ctx.createLinearGradient(-half, 0, half, 0);
+  bloomStreak.addColorStop(0, withAlpha(palette.glow, 0));
+  bloomStreak.addColorStop(0.5, withAlpha(palette.glow, 0.3 * glow));
+  bloomStreak.addColorStop(1, withAlpha(palette.glow, 0));
+  ctx.fillStyle = bloomStreak;
+  ctx.fillRect(-half, y - capH * 0.05, half * 2, capH * 0.1);
+  const top = baselines[0] - capH;
+  drawGlint(ctx, -widths[0] / 2 + capH * 0.12, top + capH * 0.06, capH * 0.42 * glow, palette.glow);
+  const last = lines.length - 1;
+  drawGlint(ctx, widths[last] / 2 - capH * 0.18, baselines[last] - capH * 0.9, capH * 0.32 * glow, palette.frame ?? palette.glow);
+  drawGlint(ctx, widths[0] * 0.08, y, capH * 0.26 * glow, '#ffffff');
+  ctx.restore();
+}
+
+/** Darkens the art right behind the caption with a soft ink pool, so the lettering stands off the busy panels. */
+export function drawCaptionShade(ctx, plan, palette, amount = 0.6) {
+  if (amount <= 0) return;
+  ctx.save();
+  ctx.translate(plan.x, plan.y + plan.capH * 0.1);
+  ctx.rotate(plan.angle);
+  ctx.scale(1, (plan.blockH * 0.78) / (plan.blockW * 0.6));
+  const r = plan.blockW * 0.6;
+  const g = ctx.createRadialGradient(0, 0, 0, 0, 0, r);
+  g.addColorStop(0, withAlpha(palette.ink, amount));
+  g.addColorStop(0.55, withAlpha(palette.ink, amount * 0.6));
+  g.addColorStop(1, withAlpha(palette.ink, 0));
+  ctx.fillStyle = g;
+  ctx.fillRect(-r, -r, r * 2, r * 2);
+  ctx.restore();
 }
 
 /** The optional slab: a skewed parallelogram in the slab colour with a hard ink shadow, speed stripes and an ink

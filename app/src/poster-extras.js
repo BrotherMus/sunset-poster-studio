@@ -10,6 +10,44 @@ import { createRandom, seedFromText } from './random.js';
 
 const DEG = Math.PI / 180;
 
+/** A burst of light rays fanning out from behind the title across the panel area, in the glow colour, strongest near
+ * the title and fading out toward the edges. `plan` is the caption's plan (its centre is the burst's centre). */
+export function drawLightRays(ctx, state, plan, area, width, palette) {
+  if (!state.extras?.rays || !plan) return;
+  const amount = 0.35 + 0.45 * state.fx.glow;
+  const reach = Math.hypot(width, area.bottom - area.top);
+  const cx = plan.x;
+  const cy = plan.y;
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(0, area.top, width, area.bottom - area.top);
+  ctx.clip();
+  ctx.globalCompositeOperation = 'screen';
+  const fade = ctx.createRadialGradient(cx, cy, plan.capH * 0.4, cx, cy, reach * 0.62);
+  fade.addColorStop(0, withAlpha(palette.glow, 0.5 * amount));
+  fade.addColorStop(0.35, withAlpha(palette.glow, 0.26 * amount));
+  fade.addColorStop(1, withAlpha(palette.glow, 0));
+  ctx.fillStyle = fade;
+  const n = 18;
+  for (let i = 0; i < n; i++) {
+    const a0 = plan.angle + (i / n) * Math.PI * 2;
+    const a1 = a0 + (Math.PI / n) * (i % 3 === 0 ? 0.55 : 0.8);
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(a0) * reach, cy + Math.sin(a0) * reach);
+    ctx.lineTo(cx + Math.cos(a1) * reach, cy + Math.sin(a1) * reach);
+    ctx.closePath();
+    ctx.fill();
+  }
+  // A warm sun glow right behind the lettering.
+  const sun = ctx.createRadialGradient(cx, cy, 0, cx, cy, plan.blockW * 0.6);
+  sun.addColorStop(0, withAlpha(palette.sun[0], 0.35 * amount));
+  sun.addColorStop(1, withAlpha(palette.sun[1], 0));
+  ctx.fillStyle = sun;
+  ctx.fillRect(0, area.top, width, area.bottom - area.top);
+  ctx.restore();
+}
+
 /** Heights of the press strip along the top and the credits strip along the bottom (0 when switched off), which the
  * layouts keep free of panels. */
 export function extrasInsets(state) {

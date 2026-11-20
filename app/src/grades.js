@@ -1,7 +1,7 @@
 // Colour grades: each is a gradient map (shadows -> highlights) blended over the photo after a contrast and
 // saturation push, an alternate map so neighbouring panels differ, and the palette the rest of the poster uses
-// (gutter ink, caption slab, lettering, glow, the painted sky scenes, the panels' frame lines and the title's
-// sunset stripes, light top to deep bottom).
+// (gutter ink, caption slab, lettering, glow, the painted sky scenes, the panels' frame lines, the title's sunset
+// stripes, light top to deep bottom, and on some grades a complementary rim colour around the title).
 
 export const GRADES = [
   {
@@ -10,7 +10,7 @@ export const GRADES = [
     map: ['#1b0630', '#7a1060', '#f2305f', '#ff8a2a', '#ffd76e'],
     alt: ['#12052b', '#521677', '#e0308f', '#ff8c5a', '#ffe2b4'],
     mix: 0.84, contrast: 1.2, saturation: 1.25,
-    palette: { ink: '#14051d', slab: '#ff2f7d', slabShade: '#9c0f4f', title: ['#fff6e0', '#ffc070'], titleShadow: '#3a0838', sub: '#ffe14d', glow: '#ff5fa2', sky: ['#2a0b4a', '#c42a6b', '#ff7b3a', '#ffd27a'], sun: ['#fff3b0', '#ff5d5d'], sea: '#3b0f52', neon: '#ff4fb0', frame: '#ffd36b', stripes: ['#fffdf0', '#ffe39a', '#ff3d8b', '#ff8a2a', '#b3124f'] },
+    palette: { ink: '#14051d', slab: '#ff2f7d', slabShade: '#9c0f4f', title: ['#fff6e0', '#ffc070'], titleShadow: '#3a0838', sub: '#ffe14d', glow: '#ff5fa2', sky: ['#2a0b4a', '#c42a6b', '#ff7b3a', '#ffd27a'], sun: ['#fff3b0', '#ff5d5d'], sea: '#3b0f52', neon: '#ff4fb0', frame: '#ffd36b', rim: '#3fe6ff', stripes: ['#fffdf0', '#ffe39a', '#ff3d8b', '#ff8a2a', '#b3124f'] },
   },
   {
     id: 'neon-nights',
@@ -50,7 +50,7 @@ export const GRADES = [
     map: ['#04201f', '#0c4f4a', '#2a9a7f', '#ff9248', '#fff0d4'],
     alt: ['#1b0a20', '#5a1a45', '#e04a5a', '#ffb067', '#fff6e2'],
     mix: 0.72, contrast: 1.2, saturation: 1.35,
-    palette: { ink: '#071514', slab: '#ff6b3d', slabShade: '#8e2a10', title: ['#fffaf0', '#ffe3b0'], titleShadow: '#0a2e2c', sub: '#3dffc8', glow: '#ff9a5c', sky: ['#0b2a3a', '#16696a', '#ff8a4a', '#ffd9a0'], sun: ['#fff7d6', '#ff8040'], sea: '#073235', neon: '#3dffc8', frame: '#ffd36b', stripes: ['#fffaf0', '#ffe9b8', '#ff4d7a', '#ff8a3a', '#9c1f3a'] },
+    palette: { ink: '#071514', slab: '#ff6b3d', slabShade: '#8e2a10', title: ['#fffaf0', '#ffe3b0'], titleShadow: '#0a2e2c', sub: '#3dffc8', glow: '#ff9a5c', sky: ['#0b2a3a', '#16696a', '#ff8a4a', '#ffd9a0'], sun: ['#fff7d6', '#ff8040'], sea: '#073235', neon: '#3dffc8', frame: '#ffd36b', rim: '#3dffc8', stripes: ['#fffaf0', '#ffe9b8', '#ff4d7a', '#ff8a3a', '#9c1f3a'] },
   },
 ];
 

@@ -5,11 +5,11 @@
 import { buildLayout } from './layouts.js';
 import { applyGradeToPixels, findGrade, withAlpha } from './grades.js';
 import { SCENES, drawScene } from './scenes.js';
-import { drawCaption, planCaption } from './lettering.js';
+import { drawCaption, drawCaptionShade, planCaption } from './lettering.js';
 import { deviceScale, insetConvexPolygon, tracePolygon } from './geometry.js';
 import { createRandom } from './random.js';
 import {
-  drawCreditsStrip, drawPanelLabels, drawPressStrip, drawSeal, drawTaglineBar, extrasInsets, measureTagline, sealPlacement,
+  drawCreditsStrip, drawLightRays, drawPanelLabels, drawPressStrip, drawSeal, drawTaglineBar, extrasInsets, measureTagline, sealPlacement,
 } from './poster-extras.js';
 
 const panelCache = new Map();
@@ -256,6 +256,8 @@ export function renderPoster(canvas, state, { pixelScale = 1, highlight = -1 } =
       draw: (bar, x, top) => drawTaglineBar(ctx, bar, x, top, palette),
     },
   });
+  drawLightRays(ctx, state, plan, layout.area, width, palette);
+  if (state.extras?.rays) drawCaptionShade(ctx, plan, palette, 0.25 + 0.25 * state.fx.vignette);
   const seal = state.extras?.seal ? sealPlacement(state, plan, layout.area) : null;
   drawPanelLabels(ctx, state, layout, palette, gutter, plan.box, seal);
   const insets = extrasInsets(state);

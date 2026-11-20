@@ -23,6 +23,7 @@ export const DEFAULT_STAMPS = ['CORAL CAUSEWAY · 7:15 PM', '', '', 'PELICAN PIE
 export function defaultExtras() {
   return {
     frames: true,
+    rays: false,
     roles: true,
     stamps: true,
     quote: true,
@@ -208,4 +209,5 @@ export function surpriseExtras(state, rng) {
   ex.vol = rng.pick(VOL_POOL);
   for (const key of ['roles', 'stamps', 'quote', 'seal', 'tagline', 'credits']) ex[key] = rng() < 0.85;
   ex.frames = rng() < 0.9;
+  ex.rays = rng() < 0.75;
 }
