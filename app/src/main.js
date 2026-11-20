@@ -214,6 +214,7 @@ function syncControls() {
   for (const b of $('layout-list').children) b.classList.toggle('active', b.dataset.layout === state.layoutId);
   for (const b of $('grade-list').children) b.classList.toggle('active', b.dataset.grade === state.gradeId);
   for (const b of $('caption-position').children) b.classList.toggle('active', b.dataset.value === state.caption.position);
+  for (const b of $('caption-lines').children) b.classList.toggle('active', b.dataset.value === String(state.caption.lines ?? 'auto'));
   $('caption-title').value = state.caption.title;
   $('caption-sub').value = state.caption.sub;
   $('caption-tag').value = state.caption.tag;
@@ -276,6 +277,12 @@ function wireControls() {
   for (const b of $('caption-position').children) {
     b.addEventListener('click', () => {
       state.caption.position = b.dataset.value;
+      update();
+    });
+  }
+  for (const b of $('caption-lines').children) {
+    b.addEventListener('click', () => {
+      state.caption.lines = b.dataset.value;
       update();
     });
   }

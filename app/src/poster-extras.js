@@ -443,7 +443,7 @@ export function sealPlacement(state, g, area) {
     y = area.top + margin + r;
   } else {
     const lx = g.blockW / 2 - r * 0.15;
-    const ly = -g.blockH / 2 - r * 0.25;
+    const ly = -g.blockH / 2 - r * 0.62;
     x = g.x + lx * Math.cos(g.angle) - ly * Math.sin(g.angle);
     y = g.y + lx * Math.sin(g.angle) + ly * Math.cos(g.angle);
   }

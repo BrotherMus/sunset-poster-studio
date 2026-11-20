@@ -2,7 +2,7 @@
 // writes); ?shot=editor shows the whole editor. Other keys set the scene:
 //   size=square|portrait|wide  layout=<id>  grade=<id>  photos=boulevard,pier (samples under app/samples/)
 //   fill=spread|scenes|one-<n>  src=photo:0,scene:palm-highway,...  crop=fx/fy/zoom[/f],...  (per panel, in order)
-//   title= sub= tag= pos=auto|top|center|bottom  scale=<lettering size>  seed=<n> (runs Surprise me)  select=<panel>
+//   title= sub= tag= pos=auto|top|center|bottom  scale=<lettering size>  lines=auto|1|2  seed=<n> (runs Surprise me)  select=<panel>
 //   strength= grain= vignette= glow= border=  slab=1 (the coloured slab behind the title)
 //   roles=THE BOSS,THE DRIVER,...  stamps=,CORAL CAUSEWAY · 7:15 PM,...  (per panel, in order; empty keeps none)
 //   quote= source= vol= seal= edge=jagged|scalloped sealspot=title|corner tagline= credits=  off=quote,seal,...  on=rays,...
@@ -41,6 +41,7 @@ export async function runShot(query, api) {
   for (const key of ['title', 'sub', 'tag']) if (query.has(key)) state.caption[key] = query.get(key);
   if (query.has('pos')) state.caption.position = query.get('pos');
   if (query.has('scale')) state.caption.scale = Number(query.get('scale'));
+  if (query.has('lines')) state.caption.lines = query.get('lines');
   for (const key of Object.keys(state.fx)) if (query.has(key)) state.fx[key] = Number(query.get(key));
   if (query.has('slab')) state.caption.slab = query.get('slab') === '1';
   if (query.has('roles')) query.get('roles').split(',').forEach((role, i) => { state.roles[i] = role; });

@@ -53,14 +53,17 @@ function setTitleFont(ctx, size) {
   ctx.letterSpacing = `${size * 0.012}px`;
 }
 
-/** Picks the title's lines and font size so it letters as big as the shape's budget allows (two lines only when
- * that is clearly bigger), times the person's lettering-size setting. */
-export function fitTitle(ctx, title, width, height, scale = 1) {
+/** Picks the title's lines and font size so it letters as big as the shape's budget allows, times the person's
+ * lettering-size setting. `lineCount` 1 or 2 forces one or two lines (two needs a space in the title); 'auto' takes
+ * two lines only when that is clearly bigger. */
+export function fitTitle(ctx, title, width, height, scale = 1, lineCount = 'auto') {
   const budget = TITLE_BUDGET[shapeOf(width, height)];
   setTitleFont(ctx, 100);
   const capRatio = ctx.measureText('H').actualBoundingBoxAscent / 100 || 0.74;
   let best = null;
-  for (const lines of titleLineOptions(title)) {
+  const options = titleLineOptions(title);
+  const wanted = options.filter((lines) => String(lines.length) === String(lineCount));
+  for (const lines of wanted.length ? wanted : options) {
     const widest = Math.max(...lines.map((l) => ctx.measureText(l).width)) / 100;
     const byWidth = (budget.width * width) / Math.max(widest, 0.01);
     const caps = lines.length === 1 ? budget.single : budget.block;
@@ -363,7 +366,7 @@ function drawSubLine(ctx, text, x, y, subSize, palette, fx) {
 export function planCaption(ctx, caption, layoutCaption, width, height, opts = {}) {
   const area = opts.area ?? { top: 0, bottom: height };
   const unit = Math.min(width, height);
-  const { lines, size, capRatio } = fitTitle(ctx, caption.title, width, height, caption.scale ?? 1);
+  const { lines, size, capRatio } = fitTitle(ctx, caption.title, width, height, caption.scale ?? 1, caption.lines ?? 'auto');
   const capH = size * capRatio;
   const lineStep = capH * LINE_STEP;
   const blockH = capH + lineStep * (lines.length - 1);

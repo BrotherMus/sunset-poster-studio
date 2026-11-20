@@ -54,7 +54,7 @@ export function createPosterState() {
     gradeId: 'sunset-strip',
     photos: [],
     panels: Array.from({ length: MAX_PANELS }, (_, i) => ({ source: `scene:${SCENES[i % SCENES.length].id}`, crop: defaultCrop() })),
-    caption: { title: 'Vice Beach', sub: 'one last summer', tag: 'Coming soon', position: 'auto', slab: false, scale: 1 },
+    caption: { title: 'Vice Beach', sub: 'one last summer', tag: 'Coming soon', position: 'auto', lines: 'auto', slab: false, scale: 1 },
     roles: [...DEFAULT_ROLES],
     stamps: [...DEFAULT_STAMPS],
     extras: defaultExtras(),
